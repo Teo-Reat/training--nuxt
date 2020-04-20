@@ -1,21 +1,36 @@
 <template>
-    <section>
-      <h1>Users page</h1>
-      <ul>
-        <li v-for="user in 5" :key="user">
-          <a href="#" @click.prevent="openUser(user)">
-            User {{ user }}
-          </a>
-        </li>
-      </ul>
-    </section>
+  <section>
+    <h1 class="text-4xl">
+      {{ pageData }}
+    </h1>
+    <ul>
+      <li v-for="user of users.data" :key="user.id">
+        <a href="#" @click.prevent="openUser(user)">
+          {{ user.name }}
+        </a>
+      </li>
+    </ul>
+  </section>
 </template>
 
 <script>
 export default {
+  async fetch ({ store }) {
+    if (store.getters['users/users'].length === 0) {
+      await store.dispatch('users/fetch')
+    }
+  },
+  data: () => ({
+    pageData: 'Users page'
+  }),
+  computed: {
+    users () {
+      return this.$store.getters['users/users']
+    }
+  },
   methods: {
     openUser (user) {
-      this.$router.push('/users/' + user)
+      this.$router.push('/users/' + user.id)
     }
   }
 }
